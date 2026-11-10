@@ -1,0 +1,17 @@
+{
+  "name": "Vận hành Miền Nam Quý 4/2026",
+  "short_name": "VHMN",
+  "description": "Phòng Vận hành Miền Nam HTD · nội bộ",
+  "lang": "vi",
+  "dir": "ltr",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#f4f5f7",
+  "theme_color": "#1c5cbd",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

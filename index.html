@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Vận hành Miền Nam Quý 4/2026</title>
+<!-- Cài trên điện thoại (PWA, đặc tả 008): icon tên VHMN, chạy toàn màn hình -->
+<meta name="theme-color" content="#1c5cbd">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="VHMN">
 <!--
   TRANG ĐĂNG NHẬP · đặt trên GitHub Pages. Trang này KHÔNG chứa số liệu hay mã của app.
   Đăng nhập Google xong, máy chủ (Apps Script) kiểm tra email trong sheet "Người dùng" rồi mới gửi app và số liệu về.
@@ -93,6 +102,10 @@ function showButton(){
   showButton();
 })();
 })();
+</script>
+<script>
+/* Đăng ký service worker để cài được trên điện thoại (đặc tả 008). Lỗi thì bỏ qua, trang vẫn chạy như web thường. */
+if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});
 </script>
 </body>
 </html>
