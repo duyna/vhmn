@@ -89,8 +89,21 @@ async function onGoogle(res){
   try{const d=await call('login',{idToken:res.credential});ls.set(TK,d.token);ls.set(OUT,null);await enter(d.token);}
   catch(e){busy=false;say(e.code==='http'||e instanceof TypeError?'Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại.':e.message,true);}
 }
+// Chờ thư viện đăng nhập Google tối đa 12 giây; không tải được (mạng chặn, sóng yếu) thì báo rõ và cho bấm Thử lại, không để trang trống
+let waited=0;
+function retryBtn(){
+  if(document.getElementById('retry'))return;
+  const b=document.createElement('button');b.id='retry';b.type='button';b.textContent='Thử lại';
+  b.style.cssText='margin-top:10px;font:inherit;font-size:14px;font-weight:600;padding:8px 18px;border-radius:99px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer';
+  b.onclick=()=>location.reload();$msg.after(b);
+}
 function showButton(){
-  if(!window.google||!google.accounts){setTimeout(showButton,200);return;}
+  if(!window.google||!google.accounts){
+    waited+=200;
+    if(waited===400&&!$msg.textContent)say('Đang tải nút đăng nhập Google…');
+    if(waited>=12000){say('Không tải được nút đăng nhập Google. Kiểm tra mạng (thử tắt Wi‑Fi, dùng 4G/5G hoặc đổi Wi‑Fi khác) rồi bấm Thử lại.',true);retryBtn();return;}
+    setTimeout(showButton,200);return;}
+  if($msg.textContent==='Đang tải nút đăng nhập Google…')say('');
   google.accounts.id.initialize({client_id:CLIENT_ID,callback:onGoogle,auto_select:!ls.get(OUT),cancel_on_tap_outside:false});
   google.accounts.id.renderButton(document.getElementById('gbtn'),{theme:'outline',size:'large',text:'signin_with',shape:'pill',locale:'vi',width:280});
   if(!ls.get(OUT))google.accounts.id.prompt();
@@ -98,7 +111,10 @@ function showButton(){
 (async()=>{
   if(API.indexOf('DAN_')===0||CLIENT_ID.indexOf('DAN_')===0){say('Trang chưa cài đặt xong: điền API và CLIENT_ID trong file index.html.',true);return;}
   const tok=ls.get(TK);
-  if(tok){try{await enter(tok);return;}catch(e){ls.set(TK,null);if(e.code!=='auth')say(e.message,true);}}
+  // chỉ bỏ phiên khi máy chủ báo hết hạn; lỗi mạng thì giữ phiên để bấm Thử lại là vào thẳng
+  if(tok){try{await enter(tok);return;}catch(e){if(e.code==='auth')ls.set(TK,null);
+    say(e.code==='auth'?'Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.':e.code==='http'||e instanceof TypeError?'Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại.':e.message,e.code!=='auth');
+    if(e.code!=='auth')retryBtn();}}
   showButton();
 })();
 })();
